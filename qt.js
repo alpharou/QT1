@@ -79,13 +79,19 @@ class Quadrant {
 
 	draw() {
 
-		for (let i = 0; i < this.childs.length; i++) {
+		if (this.childs.length > 0) {
+			
+			for (let i = 0; i < this.childs.length; i++) {
 
-			this.childs[i].draw();
+				this.childs[i].draw();
+
+			}
+
+		} else {
+
+			rect(this.x, this.y, this.w, this.h);
 
 		}
-
-		rect(this.x, this.y, this.w, this.h);
 
 	}
 
@@ -122,10 +128,10 @@ class QuadTree {
 
 	draw() {
 
-		stroke(255);
-		noFill();
 		this.rootQuadrant.draw();
+		strokeWeight(5);
 		rect(0, 0, this.w, this.h);
+		strokeWeight(3);
 		for (let i = 0; i < this.allPoints.length; i++) {
 
 			ellipse(this.allPoints[i].x, this.allPoints[i].y, 3, 3);

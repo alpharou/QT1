@@ -2,7 +2,7 @@ function setup() {
 
   createCanvas(windowWidth, windowHeight);
 
-  qt = new QuadTree(windowWidth, windowHeight, 2);
+  qt = new QuadTree(windowWidth, windowHeight, 1);
 
   for (let i = 0; i < 0; i++) {
 
@@ -14,10 +14,10 @@ function setup() {
 
 function draw() {
 
-	background(0);
+	background(255);
 
-	//Test
-	stroke(255);
+	stroke(0);
+	strokeWeight(3);
 	noFill();
 
 	//DRAW!
