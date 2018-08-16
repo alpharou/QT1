@@ -10,6 +10,19 @@ class Point {
 
 	}
 
+	isContained(q) {
+
+		if (this.x >= q.x + q.w
+			|| this.x < q.x
+			|| this.y >= q.y + q.h
+			|| this.y < q.y) {
+
+				return false;
+
+			} else {return true;}
+
+	}
+
 }
 
 class Quadrant {
@@ -77,21 +90,60 @@ class Quadrant {
 
 	}
 
-	draw() {
+	intersects(q) {
 
-		if (this.childs.length > 0) {
-			
-			for (let i = 0; i < this.childs.length; i++) {
+		//The equals are because of the top and left edge tesselation
+		if (q.x + q.w <= this.x
+			|| q.x >= this.x + this.w
+			|| q.y + q.h <= this.y
+			|| q.y >= this.y + this.h
+		) {
 
-				this.childs[i].draw();
+			return false;
 
-			}
+		} else {return true;}
+
+	}
+
+	queryContained(q) {
+
+		if (!this.intersects(q)) {return [];}
+
+		if (this.childs.length == 0) {
+
+			return this.points;
 
 		} else {
 
-			rect(this.x, this.y, this.w, this.h);
+			let queryPoints = [];
+
+			for (let i = 0; i < this.childs.length; i++) {
+
+				//Add all the points to the end of queryPoints
+				Array.prototype.push.apply(queryPoints, this.childs[i].queryContained(q));
+
+			}
+
+			return queryPoints;
 
 		}
+
+	}
+
+	getLeaves() {
+
+		//Return if this is a leaf
+		if (this.childs.length == 0) {return [this];}
+
+		let leaves = [];
+
+		for (let i = 0; i < this.childs.length; i++) {
+
+			Array.prototype.push.apply(leaves, this.childs[i].getLeaves());
+
+		}
+
+		return leaves;
 
 	}
 
@@ -104,11 +156,28 @@ class QuadTree {
     	this.w = w;
     	this.h = h;
     	this.c = c;
-    	//The origin point is 0,0 for the QuadTree
-    	this.allPoints = [];
-    	this.rootQuadrant = new Quadrant (0, 0, width, height, this);
+		this.queryQuadrant = new Quadrant(0, 0, this.w, this.h, this);
+		this.queryPoints = [[], []]; //A 2DArray to store the queries
+    	this.allPoints = []; //A log of all inserted points
+		//The origin point is 0,0 for the QuadTree
+    	this.rootQuadrant = new Quadrant (0, 0, this.w, this.h, this);
 
   	}
+
+	getAllPoints() {return this.allPoints;}
+
+	getQueryArea() {return this.queryQuadrant;}
+
+	getLatestQuery() {return this.queryPoints;}
+
+	getRootQuadrant() {return this.rootQuadrant;}
+
+	//Return an array of all non-subdivided quadrants (leaves)
+	getLeaves() {
+
+		return this.rootQuadrant.getLeaves();
+
+	}
 
   	insert(p) {
 
@@ -126,17 +195,27 @@ class QuadTree {
 
   	}
 
-	draw() {
+	query(x, y, w, h) {
 
-		this.rootQuadrant.draw();
-		strokeWeight(5);
-		rect(0, 0, this.w, this.h);
-		strokeWeight(3);
-		for (let i = 0; i < this.allPoints.length; i++) {
+		this.queryQuadrant = new Quadrant(x, y, w, h, this);
 
-			ellipse(this.allPoints[i].x, this.allPoints[i].y, 3, 3);
+		//Clear query[0] with possible points and query[1] with contained points.
+		this.queryPoints = [[], []];
+
+		this.queryPoints[0] = this.rootQuadrant.queryContained(this.queryQuadrant);
+		this.queryPoints[1] = [];
+
+		for(let i = 0; i < this.queryPoints[0].length; i++) {
+
+			if (this.queryPoints[0][i].isContained(this.queryQuadrant)) {
+
+				this.queryPoints[1].push(this.queryPoints[0][i]);
+
+			}
 
 		}
+
+		return this.queryPoints;
 
 	}
 
