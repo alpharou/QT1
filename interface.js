@@ -3,7 +3,7 @@ function setup() {
 	areaR = 50;
 	pointSize = 6;
 	strokeWheight = 2;
-	initialPoints = 50;
+	initialPoints = 500;
 
   	createCanvas(windowWidth, windowHeight);
 
@@ -20,6 +20,8 @@ function setup() {
 }
 
 function draw() {
+
+	//qt.remake();
 
 	background(255);
 	strokeWeight(strokeWheight);

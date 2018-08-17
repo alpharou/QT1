@@ -93,10 +93,10 @@ class Quadrant {
 	intersects(q) {
 
 		//The equals are because of the top and left edge tesselation
-		if (q.x + q.w <= this.x
-			|| q.x >= this.x + this.w
-			|| q.y + q.h <= this.y
-			|| q.y >= this.y + this.h
+		if (q.x + q.w < this.x
+			|| q.x > this.x + this.w
+			|| q.y + q.h < this.y
+			|| q.y > this.y + this.h
 		) {
 
 			return false;
@@ -179,12 +179,41 @@ class QuadTree {
 
 	}
 
+	clear() {
+
+		this.allPoints = [];
+    	this.rootQuadrant = new Quadrant (0, 0, this.w, this.h, this);
+		return;
+
+	}
+
+	remake() {
+
+		let allPoints = this.allPoints;
+
+		this.clear();
+
+		for (let p of allPoints) {
+
+			this.insert(p);
+
+		}
+
+	}
+
   	insert(p) {
 
     	//If p is not a Point object don't do anything.
     	if (!(p instanceof Point)) {
 			console.log("Cannot insert anything but Point objects");
 			return;
+		}
+
+		//Prevent duplicates
+		for (let p2 of this.allPoints) {
+
+			if (p.x == p2.x && p.y == p2.y) {return;}
+
 		}
 
     	//Add it to the root list
